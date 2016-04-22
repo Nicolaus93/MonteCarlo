@@ -1,16 +1,16 @@
-%%global phi psiZ psiW
+%% initialize parameters
 global Z phi psiZ psiW trans
 deltaT = .5;
 alpha = .6;
 definePars(deltaT, alpha)
 
-%%
+%% get a trajectory
 
-% initial X, and W
+% X0 state
 mu = zeros(6,1);
 sigma= diag([500,5,5,200,5,5]);
 X(:,1) = mvnrnd(mu,sigma);
-W = mvnrnd(zeros(2,1),.5^2*ones(2));
+%W = mvnrnd(zeros(2,1),.5^2*ones(2));
 
 % state with n = 0 (X1)
 index = randi(5);
@@ -33,7 +33,7 @@ x = X(1,:);
 y = X(4,:);
 scatter(x,y,'b')
 
-%% observation model
+%% generate observation 
 
 load('stations.mat')
 global stations
@@ -54,6 +54,6 @@ hold on
 scatter(x,y,'b')
 plot(x1,y1,'r')
 
-%%
+%% to do
 load('RSSI-measurements.mat')
 
