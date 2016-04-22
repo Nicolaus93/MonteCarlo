@@ -18,7 +18,7 @@ function [tau, w] = SIS2(obs)
         temp(i, indices(i))=1;
     end
     
-    % particle bla bla bla
+    % we should get rid of one for loop here 
     for k = 1:n
         for j = 1:N
             index = randsample(5,1,true,temp(j,:)*trans);
@@ -28,7 +28,7 @@ function [tau, w] = SIS2(obs)
                 psiW * mvnrnd(zeros(2,1),.5^2*ones(2))';            
         end 
         w = w.*prob(obs(:,k+1)', part(1,:), part(4,:));
-        k
+        k %print the timesteps
         tau(:,k+1) = sum(bsxfun(@times,part,w'),2)/sum(w);
     end
 

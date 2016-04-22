@@ -16,6 +16,8 @@ function [tau, w] = SIS(obs,stations)
     
     % weights
     w = zeros(N,1);
+    %test = arrayfun(@(x) p(obs(:,1),x), [part(1,:) part(4,:)]); % it's slower
+    
     for j = 1:N
         w(j) = p(obs(:,1), [part(1,j), part(4,j)]);
     end
@@ -36,7 +38,8 @@ function [tau, w] = SIS(obs,stations)
             part(:,j) = phi*part(:,j) + psiZ*Z(:,index) + ...
                 psiW * mvnrnd(zeros(2,1),.5^2*ones(2))';
             w(j) = w(j).*p(obs(:,k+1), [part(1,j), part(4,j)]);
-        end  
+        end 
+        k %print the time steps
         tau(:,k+1) = sum(bsxfun(@times,part,w'),2)/sum(w);
     end
     

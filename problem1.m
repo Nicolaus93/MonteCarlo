@@ -36,14 +36,18 @@ scatter(x,y,'b')
 %% observation model
 
 load('stations.mat')
-% observations parameters
-for i = 1:100
+global stations
+for i = 1:50
     observ(:,i) = obs(x(i), y(i), stations);  
 end
 
 %% a test on our trajectory
-
-[tau, w] = SIS(observ, stations);
+tic
+[tau1, w1] = SIS(observ, stations);
+toc
+tic
+[tau, w] = SIS2(observ);
+toc
 x1 = tau(1,:);
 y1 = tau(4,:);
 hold on
