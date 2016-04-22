@@ -30,9 +30,9 @@ function [tau, w] = SIS(obs,stations)
     
     for k = 1:n
         for j = 1:N
-            index = randsample(5,1,true,temp()trans*temp(:,j));
-            temp(:,j) = zeros(5,1);
-            temp(index, j) = 1;
+            index = randsample(5,1,true,temp(j,:)*trans);
+            temp(j,:) = zeros(1,5);
+            temp(j,index) = 1;
             part(:,j) = phi*part(:,j) + psiZ*Z(:,index) + ...
                 psiW * mvnrnd(zeros(2,1),.5^2*ones(2))';
             w(j) = w(j).*p(obs(:,k+1), [part(1,j), part(4,j)]);
