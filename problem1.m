@@ -41,14 +41,14 @@ for i = 1:100
     observ(:,i) = obs(x(i), y(i), stations);  
 end
 
-%%
+%% a test on our trajectory
 
 [tau, w] = SIS(observ, stations);
 x1 = tau(1,:);
 y1 = tau(4,:);
 hold on
 scatter(x,y,'b')
-scatter(x1,y1,'r')
+plot(x1,y1,'r')
 
 %%
 load('RSSI-measurements.mat')

@@ -1,6 +1,6 @@
 function [tau, w] = SIS(obs,stations)
     global Z phi psiZ psiW trans 
-    N = 100;
+    N = 10000;
     n = length(obs)-1;
     tau = zeros(6,n);
     
