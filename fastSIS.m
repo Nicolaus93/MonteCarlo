@@ -9,7 +9,7 @@ function [tau, w] = fastSIS(obs)
     part = mvnrnd(zeros(6,1), diag([500,5,5,200,5,5]), N)'; % 6XN particles
     
     % initial weights
-    w = prob(obs(:,1)', part(1,:), part(4,:));
+    w(:,1) = prob(obs(:,1)', part(1,:), part(4,:));
     
     indices = randi(5,1,N);
     % should define tau(1)
@@ -23,7 +23,7 @@ function [tau, w] = fastSIS(obs)
             bigZ(:,temp==j) = Z(:,indices(temp==j));
         end
         part = phi*part + psiZ*bigZ + psiW * mvnrnd(zeros(2,1),.5^2*ones(2),N)';
-        w = w.*prob(obs(:,k+1)', part(1,:), part(4,:));
+        w(:,k+1) = w(:,k).*prob(obs(:,k+1)', part(1,:), part(4,:));
         k %print the timesteps
-        tau(:,k+1) = sum(bsxfun(@times,part,w'),2)/sum(w);
+        tau(:,k+1) = sum(bsxfun(@times,part,w(:,k+1)'),2)/sum(w(:,k+1));
     end
