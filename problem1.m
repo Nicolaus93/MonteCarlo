@@ -21,7 +21,8 @@ temp(randi(5)) = 1;
 
 %index = randsample(5,1,true,trans(:,randi(5)))
 
-for i = 3:100
+for i = 3:500
+    % index = randsample(5,1,true,trans(index,:);
     index = randsample(5,1,true,temp*trans);
     temp = zeros(1,5);
     temp(index) = 1;
@@ -37,16 +38,16 @@ scatter(x,y,'b')
 
 load('stations.mat')
 global stations
-for i = 1:50
+for i = 1:length(X)
     observ(:,i) = obs(x(i), y(i), stations);  
 end
 
 %% a test on our trajectory
+%tic
+%[tau1, w1] = SIS(observ, stations);
+%toc
 tic
-[tau1, w1] = SIS(observ, stations);
-toc
-tic
-[tau, w] = SIS2(observ);
+[tau, w] = fastSIS(observ);
 toc
 x1 = tau(1,:);
 y1 = tau(4,:);
