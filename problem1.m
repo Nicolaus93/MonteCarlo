@@ -21,7 +21,7 @@ temp(randi(5)) = 1;
 
 %index = randsample(5,1,true,trans(:,randi(5)))
 
-for i = 3:500
+for i = 3:100
     % index = randsample(5,1,true,trans(index,:);
     index = randsample(5,1,true,temp*trans);
     temp = zeros(1,5);
@@ -43,17 +43,32 @@ for i = 1:length(X)
 end
 
 %% a test on our trajectory
-%tic
-%[tau1, w1] = SIS(observ, stations);
-%toc
 tic
 [tau, w] = fastSIS(observ);
 toc
 x1 = tau(1,:);
 y1 = tau(4,:);
 hold on
-scatter(x,y,'b')
+plot(x,y,'b')
 plot(x1,y1,'r')
+
+%% plot histograms
+figure
+subplot(4,1,1)       
+histogram(log10(w(:,1)),[-350:10:0])
+title('n = 1')
+
+subplot(4,1,2)       
+histogram(log10(w(:,10)),[-350:10:0])
+title('n = 10')
+
+subplot(4,1,3)       
+histogram(log10(w(:,20)),[-350:10:0])
+title('n = 20')
+
+subplot(4,1,4)       
+histogram(log10(w(:,40)),[-350:10:0])
+title('n = 40')
 
 %% to do
 load('RSSI-measurements.mat')
