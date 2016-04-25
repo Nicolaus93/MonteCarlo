@@ -1,4 +1,5 @@
-function y = obs(x,y,stations)
+function y = obs(x,y)
+    global stations
     v = 90*ones(length(stations),1);
     eta = 3;
     diff = bsxfun(@minus,[x,y]',stations);
