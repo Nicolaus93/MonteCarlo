@@ -11,12 +11,13 @@ function [tau, w] = fastSIS(obs, resampling)
     % initial weights
     w(:,1) = prob(obs(:,1)', part(1,:), part(4,:));
     
+    % tau(1)
+    tau(:,1) = sum(bsxfun(@times,part,w(:,1)'),2)/sum(w(:,1));
+    
+    % some parameters
     indices = randi(5,1,N);
-    % should define tau(1)
-    % tau(:,1) = 
     bigZ = zeros(2,N);
     
-    % nice version
     for k = 1:n
         for j = 1:5
             temp = indices;
