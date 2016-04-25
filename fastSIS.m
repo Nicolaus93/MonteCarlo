@@ -14,6 +14,8 @@ function [tau, w] = fastSIS(obs, resampling)
     % tau(1)
     tau(:,1) = sum(bsxfun(@times,part,w(:,1)'),2)/sum(w(:,1));
     
+    % should add the state with n=0 (X1)
+    
     % some parameters
     indices = randi(5,1,N);
     bigZ = zeros(2,N);
