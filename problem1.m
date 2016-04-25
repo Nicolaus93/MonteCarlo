@@ -1,5 +1,6 @@
 %% initialize parameters
-global Z phi psiZ psiW trans
+load('stations.mat')
+global Z phi psiZ psiW trans stations
 deltaT = .5;
 alpha = .6;
 definePars(deltaT, alpha)
@@ -10,7 +11,6 @@ definePars(deltaT, alpha)
 mu = zeros(6,1);
 sigma= diag([500,5,5,200,5,5]);
 X(:,1) = mvnrnd(mu,sigma);
-%W = mvnrnd(zeros(2,1),.5^2*ones(2));
 
 % state with n = 0 (X1)
 index = randi(5);
@@ -32,23 +32,20 @@ end
 
 x = X(1,:);
 y = X(4,:);
-scatter(x,y,'b')
+hold on
+scatter(x,y,1,'b')
+scatter(stations(1,:),stations(2,:),'r','filled')
+
 
 %% generate observation 
 
-load('stations.mat')
-global stations
 for i = 1:length(X)
-    observ(:,i) = obs(x(i), y(i), stations);  
+    observ(:,i) = obs(x(i), y(i));  
 end
-hold on
-scatter(stations(1,:),stations(2,:),'r')
-plot(x,y,'b')
 
-%% a test on our trajectory
-tic
-[tau, w] = fastSISR(observ);
-toc
+%% a test on our trajectory (SISR)
+
+[tau, ~] = fastSISR(observ);
 x1 = tau(1,:);
 y1 = tau(4,:);
 hold on
@@ -56,7 +53,16 @@ scatter(stations(1,:),stations(2,:),'r')
 plot(x,y,'b')
 plot(x1,y1,'r')
 
-%% plot histograms
+%% problem 3
+load('RSSI-measurements.mat')
+[tau, w] = fastSIS(Y, false);
+x1 = tau(1,:);
+y1 = tau(4,:);
+hold on
+scatter(stations(1,:),stations(2,:),'r')
+plot(x1,y1,'r')
+
+%% plot histograms for weights
 figure
 subplot(4,1,1)       
 histogram(log10(w(:,1)),-350:10:0)
@@ -75,7 +81,6 @@ histogram(log10(w(:,40)),-350:10:0)
 title('n = 40')
 
 %% problem4 trajectory estimation
-load('RSSI-measurements.mat')
 [tau, w] = fastSISR(Y);
 x1 = tau(1,:);
 y1 = tau(4,:);
