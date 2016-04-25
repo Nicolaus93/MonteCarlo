@@ -1,4 +1,4 @@
-function [tau, w] = fastSIS(obs, resampling)
+function [tau, w, nonzero] = fastSIS(obs, resampling)
     global Z phi psiZ psiW trans 
     N = 10000;
     n = length(obs);
@@ -19,6 +19,8 @@ function [tau, w] = fastSIS(obs, resampling)
     % some parameters
     indices = randi(5,1,N);
     bigZ = zeros(2,N);
+    nonzero = zeros(N,1);
+    nonzero(1) = sum(w(:,1)>0);
     
     for k = 1:n
         for j = 1:5
@@ -28,11 +30,13 @@ function [tau, w] = fastSIS(obs, resampling)
         end
         part = phi*part + psiZ*bigZ + psiW * mvnrnd(zeros(2,1),.5^2*ones(2),N)'; % mutation
         w(:,k+1) = w(:,k).*prob(obs(:,k+1)', part(1,:), part(4,:)); % weighting
+        nonzero(k+1) = sum(w(:,k+1)>0);
         k %print the timesteps
         tau(:,k+1) = sum(bsxfun(@times,part,w(:,k+1)'),2)/sum(w(:,k+1)); % estimation
         if resampling == true
            % to do: modify w update as well
            ind = randsample(N,N,true,w(:,k+1));
            part = part(:,ind);
+           
         end
     end

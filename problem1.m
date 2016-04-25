@@ -55,12 +55,18 @@ plot(x1,y1,'r')
 
 %% problem 3
 load('RSSI-measurements.mat')
-[tau, w] = fastSIS(Y, false);
+[tau, w, nonzeros] = fastSIS(Y, false);
 x1 = tau(1,:);
 y1 = tau(4,:);
+
+figure(1)
 hold on
 scatter(stations(1,:),stations(2,:),'r')
 plot(x1,y1,'r')
+
+figure(2)
+l = linspace(1,60,60);
+scatter(l,nonzeros(1:60),'b','filled')
 
 %% plot histograms for weights
 figure
