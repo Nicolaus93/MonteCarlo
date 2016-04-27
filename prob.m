@@ -8,4 +8,4 @@ function p = prob(obs, part1, part4)
     two = bsxfun(@minus,part4(:),stations(2,:)); % Nx7
     mean = 90-30*log10(sqrt(one.^2 + two.^2));   % Nx7
     y = repmat(obs,length(part1),1);             % Nx7
-    p = prod(normpdf(y,mean,1.5^2),2);
+    p = prod(normpdf(y,mean,1.5),2);
