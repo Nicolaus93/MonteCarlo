@@ -31,12 +31,10 @@ function [tau, w, nonzero] = fastSIS(obs, resampling)
         part = phi*part + psiZ*bigZ + psiW * mvnrnd(zeros(2,1),.5^2*ones(2),N)'; % mutation
         w(:,k+1) = w(:,k).*prob(obs(:,k+1)', part(1,:), part(4,:)); % weighting
         nonzero(k+1) = sum(w(:,k+1)>0);
-        k %print the timesteps
         tau(:,k+1) = sum(bsxfun(@times,part,w(:,k+1)'),2)/sum(w(:,k+1)); % estimation
         if resampling == true
            % to do: modify w update as well
            ind = randsample(N,N,true,w(:,k+1));
-           part = part(:,ind);
-           
+           part = part(:,ind);           
         end
     end
