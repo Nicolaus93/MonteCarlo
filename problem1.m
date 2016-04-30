@@ -111,28 +111,33 @@ N = 10000;
 
 %% run this part changing alpha and c(i) values
 tic
-alpha = .5; % change at every iteration
+alpha = .6; % change at every iteration
 phiTilde = [1, deltaT, deltaT^2/2; 0, 1, deltaT; 0, 0, alpha];
 phi = [phiTilde, zeros(3); zeros(3), phiTilde];
 for i = 1:10
     [~, w] = fastSISR(N, observ);          
     est(i) = sum(log(sum(w)/N))/length(observ);
 end
-c(5) = sum(est)/length(est); % change at every iteration
+c(6) = sum(est)/length(est); % change at every iteration
 toc 
 
 %% it does everything with one for loop, takes too much time
+load('RSSI-measurements-unknown-alpha.mat')
+cio = zeros(1,9);
+k = 10; % num of iterations for each alpha
+N = 100;
 
-for i = 1:10
+for i = 1:9
     alpha = i/10;
     phiTilde = [1, deltaT, deltaT^2/2; 0, 1, deltaT; 0, 0, alpha];
     phi = [phiTilde, zeros(3); zeros(3), phiTilde];
-    for j = 1:10        
-        [~, w] = fastSISR(N, observ);          
-        est(j) = sum(log(sum(w)/N))/length(observ);
+    est = zeros(1,k);
+    for j = 1:k        
+        [~, w] = fastSISR(N, Y);          
+        est(j) = sum(log(sum(w)/N))/length(Y);
     end
-    c(i) = sum(est)/length(est);
+    cio(i) = sum(est)/length(est);
 end 
 
-[~, index] = max(c);
+[~, index] = max(cio);
 realAlpha = index/10
