@@ -124,8 +124,8 @@ toc
 %% it does everything with one for loop, takes too much time
 load('RSSI-measurements-unknown-alpha.mat')
 cio = zeros(1,9);
-k = 10; % num of iterations for each alpha
-N = 100;
+k = 50; % num of iterations for each alpha
+N = 10000;
 
 for i = 1:9
     alpha = i/10;
@@ -141,3 +141,4 @@ end
 
 [~, index] = max(cio);
 realAlpha = index/10
+plot(cio)
