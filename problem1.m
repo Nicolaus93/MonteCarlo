@@ -1,11 +1,13 @@
 %% initialize parameters
+clear
+
 load('stations.mat')
 global Z phi psiZ psiW trans stations
 deltaT = .5;
-alpha = .6;
+alpha = 0.6;
 definePars(deltaT, alpha)
 
-%% get a trajectory
+%% Problem 1: get a trajectory
 
 % X0 state
 mu = zeros(6,1);
@@ -19,13 +21,8 @@ X(:,2) = phi*X(:,1) + psiZ*Z(:,index) + ...
 temp = zeros(1,5);
 temp(randi(5)) = 1;
 
-%index = randsample(5,1,true,trans(:,randi(5)))
-
 for i = 3:500
     index = randsample(5,1,true,trans(index,:));
-    %index = randsample(5,1,true,temp*trans);
-    %temp = zeros(1,5);
-    %temp(index) = 1;
     X(:,i) = phi*X(:,i-1) + psiZ*Z(:,index) + ...
         psiW * mvnrnd(zeros(2,1),.5^2*ones(2))';
 end
@@ -35,17 +32,18 @@ y = X(4,:);
 hold on
 scatter(x,y,1,'b')
 scatter(stations(1,:),stations(2,:),'r','filled')
+%xlabel('X1')
+%ylabel('X2')
 
-
-%% generate observation 
-
+% generate observation 
 for i = 1:length(X)
     observ(:,i) = obs(x(i), y(i));  
 end
 
 %% a test on our trajectory (SISR)
 
-[tau, ~] = fastSISR(observ);
+N = 10000;
+[tau, ~] = fastSISR(N, observ);
 x1 = tau(1,:);
 y1 = tau(4,:);
 hold on
@@ -55,18 +53,20 @@ plot(x1,y1,'r')
 
 %% problem 3
 load('RSSI-measurements.mat')
-[tau, w, nonzeros] = fastSIS(Y, false);
+[tau, w] = fastSIS(Y);
 x1 = tau(1,:);
 y1 = tau(4,:);
 
 figure(1)
 hold on
-scatter(stations(1,:),stations(2,:),'r')
-plot(x1,y1,'r')
+scatter(stations(1,:),stations(2,:),'r','filled')
+plot(x1,y1,'-.r')
+legend('station 1', 'estimated traj','true traj')
 
 figure(2)
 l = linspace(1,60,60);
-scatter(l,nonzeros(1:60),'b','filled')
+ess = effSampleSize(w(:,1:60));
+scatter(l,ess,'b','filled')
 
 %% plot histograms for weights
 figure
@@ -87,11 +87,52 @@ histogram(log10(w(:,40)),-350:10:0)
 title('n = 40')
 
 %% problem4 trajectory estimation
-[tau, w] = fastSISR(Y);
+N = 10000;
+[tau, w] = fastSISR(N, Y);
 x1 = tau(1,:);
 y1 = tau(4,:);
 
-%% plot results
+% plot results
+figure(1)
 hold on
-scatter(stations(1,:),stations(2,:),'r','filled')
+scatter(stations(1,:),stations(2,:),'r','*')
 scatter(x1,y1,1,'b','filled')
+legend('stations','estimated trajectory')
+
+% eff sample size
+figure(2)
+plot(effSampleSize(w))
+
+%% problem5 with our trajectory
+
+c = zeros(1,10);
+est = zeros(1,10);
+N = 10000;
+
+%% run this part changing alpha and c(i) values
+tic
+alpha = .5; % change at every iteration
+phiTilde = [1, deltaT, deltaT^2/2; 0, 1, deltaT; 0, 0, alpha];
+phi = [phiTilde, zeros(3); zeros(3), phiTilde];
+for i = 1:10
+    [~, w] = fastSISR(N, observ);          
+    est(i) = sum(log(sum(w)/N))/length(observ);
+end
+c(5) = sum(est)/length(est); % change at every iteration
+toc 
+
+%% it does everything with one for loop, takes too much time
+
+for i = 1:10
+    alpha = i/10;
+    phiTilde = [1, deltaT, deltaT^2/2; 0, 1, deltaT; 0, 0, alpha];
+    phi = [phiTilde, zeros(3); zeros(3), phiTilde];
+    for j = 1:10        
+        [~, w] = fastSISR(N, observ);          
+        est(j) = sum(log(sum(w)/N))/length(observ);
+    end
+    c(i) = sum(est)/length(est);
+end 
+
+[~, index] = max(c);
+realAlpha = index/10
